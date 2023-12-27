@@ -12,11 +12,11 @@ const TodoList = (props) => {
         handleRowClick,
         handleEditMode,
         handleRowDelete } = props;
-
+    console.log(items);
     return (
         <List>
             {items && items.map((item, index) => (
-                <ListItem key={index} className='todo-item'>
+                <ListItem key={item.id} className='todo-item'>
                     <ListItemText
                         style={{
                             fontSize: '20px'
@@ -27,17 +27,14 @@ const TodoList = (props) => {
                     />
                     <ListItemSecondaryAction>
                         <IconButton
-                            style={{
-                                color: '#1e90ff'
-                            }}
+                            style={{ color: '#1e90ff' }}
                             onClick={() => handleEditMode(item)}
-                            edge="end" aria-label="edit">
+                            edge="end"
+                            aria-label="edit">
                             <EditIcon />
                         </IconButton>
                         <IconButton
-                            style={{
-                                color: '#b22222'
-                            }}
+                            style={{ color: '#b22222' }}
                             onClick={() => handleRowDelete(item)}
                             edge="end" aria-label="delete">
                             <DeleteIcon />

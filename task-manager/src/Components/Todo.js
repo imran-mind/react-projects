@@ -32,13 +32,8 @@ const Todo = () => {
     //To restore items from localstorage if page refresh
     useEffect(() => {
         const items = localStorage.getItem("todos");
-        setTodos(JSON.parse(items));
+        setTodos(items ? JSON.parse(items) : []);
     }, [])
-
-    //todos list is saving into local storage
-    useEffect(() => {
-
-    }, [todos])
 
     const handleClick = (e) => {
         e.preventDefault();
@@ -96,6 +91,7 @@ const Todo = () => {
         const msg = `Task Deleted Successfully!`;
         setAlertMessage(msg);
     }
+
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
@@ -114,7 +110,8 @@ const Todo = () => {
                     onChange={handleChange}
                     // error={!isInputValid}
                     helperText={!isInputValid ? 'Input must be at least 3 characters' : ''}
-                    placeholder='Your Task...' />
+                    placeholder='Your Task...'
+                />
             </form>
         </div>
         <div className='list-box'>
