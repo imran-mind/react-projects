@@ -15,7 +15,7 @@ const TodoList = (props) => {
 
     return (
         <List>
-            {items.map((item, index) => (
+            {items && items.map((item, index) => (
                 <ListItem key={index} className='todo-item'>
                     <ListItemText
                         style={{
@@ -45,6 +45,12 @@ const TodoList = (props) => {
                     </ListItemSecondaryAction>
                 </ListItem>
             ))}
+            {
+                (!items || items.length === 0) &&
+                <div>
+                    No Task Found
+                </div>
+            }
         </List>
     );
 };
