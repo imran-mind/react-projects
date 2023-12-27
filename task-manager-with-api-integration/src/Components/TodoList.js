@@ -12,17 +12,18 @@ const TodoList = (props) => {
         handleRowClick,
         handleEditMode,
         handleRowDelete } = props;
+    console.log('=---items ', items);
     return (
         <List>
             {items && items.map((item, index) => (
-                <ListItem key={item.id} className='todo-item'>
+                <ListItem key={item._id} className='todo-item'>
                     <ListItemText
                         style={{
                             fontSize: '20px'
                         }}
-                        className={item.isDone ? 'strik-through' : null}
+                        className={item.isCompleted ? 'strik-through' : null}
                         onClick={() => handleRowClick(item)}
-                        primary={item.data}
+                        primary={item.name}
                     />
                     <ListItemSecondaryAction>
                         <IconButton

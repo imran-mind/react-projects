@@ -1,0 +1,1 @@
+export const SERVER_URL = "https://tasks-api-bice.vercel.app/api/v1";

@@ -5,27 +5,32 @@ import { TextField } from '@mui/material';
 import TodoList from './TodoList';
 import CustomLoader from './CustomLoader';
 import CustomAlert from './CustomAlert';
+import { CreateTask, DeleteTask, FetchTasks, UpdateTask } from './TaskApi';
 
 const Todo = () => {
-    const [todo, setTodo] = useState({ id: 0, data: '', isDone: false });
+    const [todo, setTodo] = useState({ name: '' });
     const [todos, setTodos] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isSnackbarOpen, setSnackbarOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [isSaving, setSaving] = useState(false);
-    const isInputValid = todo.data.length >= 3;
+    const isInputValid = todo?.name?.length >= 3;
 
     const handleChange = (e) => {
         console.log(e.target.value);
         if (isEditMode) {
-            setTodo({ id: todo.id, data: e.target.value });
+            setTodo({
+                _id: todo?._id,
+                name: e.target.value,
+                isCompleted: todo?.isCompleted
+            });
         } else {
-            setTodo({ id: Date.now(), data: e.target.value });
+            setTodo({ name: e.target.value });
         }
     }
 
     const handleEditMode = (item) => {
-        setIsEditMode((isEditMode) => !isEditMode);
+        setIsEditMode(true);
         setTodo(item);
     }
 
@@ -35,58 +40,56 @@ const Todo = () => {
         setTodos(items ? JSON.parse(items) : []);
     }, [])
 
-    const handleClick = (e) => {
+    const handleClick = async (e) => {
         e.preventDefault();
-        setSaving(true)
         if (todo && !isEditMode && isInputValid) { // Add new Mode
-            console.log(e.keyCode);
-            const newTodos = [...todos, todo];
-            localStorage.setItem("todos", JSON.stringify(newTodos));
-            setTodos(newTodos);
-
+            setSaving(true)
+            await CreateTask(todo);
+            const tasks = await FetchTasks();
+            setTodos(tasks);
+            setSaving(false)
         } else if (todo && isEditMode && isInputValid) { //Edit Mode
-            console.log(todo, isEditMode);
-            const copyTodos = [...todos];
-            const newTodos = copyTodos.map((item) => { //updated list
-                if (item.id === todo.id) {
-                    item.data = todo.data;
-                    console.log('if block ', item);
-                }
-                return item;
-            });
-            localStorage.setItem("todos", JSON.stringify(newTodos));
-            console.log(newTodos)
-            setTodos(newTodos);
+            setSaving(true)
+            await UpdateTask(todo);
+            const tasks = await FetchTasks();
+            setTodos(tasks);
+            setSaving(false)
             setIsEditMode(false);
         }
-        setTodo({ id: 0, data: '', isDone: false });
+        setTodo({ _id: 0, name: '', isCompleted: false });
         const msg = `Task ${isEditMode ? 'Updated' : 'Created'} Successfully!`;
         setAlertMessage(msg);
         setSnackbarOpen(true);
-        setTimeout(() => {
-            setSaving(false)
-        }, 2000)
     }
 
-    const handleRowClick = (clickedItem) => {
-        console.log('handlerowclick ', clickedItem);
-        const copyTodos = [...todos];
-        const newTodos = copyTodos.map((item) => {
-            if (item.id === clickedItem.id) {
-                item.isDone = !item.isDone;
-            }
-            return item;
-        });
-        console.log(newTodos)
-        setTodos(newTodos);
+    const handleRowClick = async (clickedItem) => {
+
+        // const copyTodos = [...todos];
+        // const newTodos = copyTodos.map((item) => {
+        //     if (item._id === clickedItem._id) {
+        //         console.log('handlerowclick ', clickedItem);
+        //         item.isCompleted = !item.isCompleted;
+        //     }
+        //     return item;
+        // });
+        // console.log(newTodos)
+        // setTodos(newTodos);
+        setSaving(true)
+        clickedItem.isCompleted = !clickedItem.isCompleted;
+        await UpdateTask(clickedItem);
+        const tasks = await FetchTasks();
+        setTodos(tasks);
+        setSaving(false)
+        setIsEditMode(false);
     };
 
-    const handleRowDelete = (rowData) => {
-        const { id } = rowData;
-        const copyTodos = [...todos];
-        const list = copyTodos.filter((item) => item.id !== id);
-        setTodos(list);
-        localStorage.setItem("todos", JSON.stringify(list));
+    const handleRowDelete = async (rowData) => {
+        const { _id } = rowData;
+        setSaving(true)
+        await DeleteTask(_id);
+        const tasks = await FetchTasks();
+        setTodos(tasks);
+        setSaving(false)
         setSnackbarOpen(true);
         const msg = `Task Deleted Successfully!`;
         setAlertMessage(msg);
@@ -96,6 +99,15 @@ const Todo = () => {
         setSnackbarOpen(false);
     };
 
+    useEffect(() => {
+        const run = async () => {
+            setSaving(true);
+            const tasks = await FetchTasks();
+            setTodos(tasks);
+            setSaving(false);
+        }
+        run();
+    }, [])
     return <div className='container'>
         <div className='top-box'>
             <form onSubmit={handleClick}>
@@ -105,7 +117,7 @@ const Todo = () => {
                     min={3}
                     fullWidth
                     autoFocus
-                    value={todo.data}
+                    value={todo.name}
                     type='text'
                     onChange={handleChange}
                     // error={!isInputValid}
