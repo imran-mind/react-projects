@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Todo.css';
 import { TextField } from '@mui/material';
 import TodoList from './TodoList';
@@ -34,52 +34,36 @@ const Todo = () => {
         setTodo(item);
     }
 
-    //To restore items from localstorage if page refresh
-    useEffect(() => {
-        const items = localStorage.getItem("todos");
-        setTodos(items ? JSON.parse(items) : []);
-    }, [])
-
+    const loadTodos = async () => {
+        const tasks = await FetchTasks();
+        setTodos(tasks);
+        setSaving(false)
+    }
     const handleClick = async (e) => {
         e.preventDefault();
         if (todo && !isEditMode && isInputValid) { // Add new Mode
             setSaving(true)
             await CreateTask(todo);
-            const tasks = await FetchTasks();
-            setTodos(tasks);
-            setSaving(false)
+            await loadTodos();
         } else if (todo && isEditMode && isInputValid) { //Edit Mode
             setSaving(true)
             await UpdateTask(todo);
-            const tasks = await FetchTasks();
-            setTodos(tasks);
-            setSaving(false)
+            await loadTodos();
             setIsEditMode(false);
         }
         setTodo({ _id: 0, name: '', isCompleted: false });
-        const msg = `Task ${isEditMode ? 'Updated' : 'Created'} Successfully!`;
-        setAlertMessage(msg);
-        setSnackbarOpen(true);
+        if (isInputValid) {
+            const msg = `Task ${isEditMode ? 'Updated' : 'Created'} Successfully!`;
+            setAlertMessage(msg);
+            setSnackbarOpen(true);
+        }
     }
 
     const handleRowClick = async (clickedItem) => {
-
-        // const copyTodos = [...todos];
-        // const newTodos = copyTodos.map((item) => {
-        //     if (item._id === clickedItem._id) {
-        //         console.log('handlerowclick ', clickedItem);
-        //         item.isCompleted = !item.isCompleted;
-        //     }
-        //     return item;
-        // });
-        // console.log(newTodos)
-        // setTodos(newTodos);
         setSaving(true)
         clickedItem.isCompleted = !clickedItem.isCompleted;
         await UpdateTask(clickedItem);
-        const tasks = await FetchTasks();
-        setTodos(tasks);
-        setSaving(false)
+        await loadTodos();
         setIsEditMode(false);
     };
 
@@ -87,9 +71,7 @@ const Todo = () => {
         const { _id } = rowData;
         setSaving(true)
         await DeleteTask(_id);
-        const tasks = await FetchTasks();
-        setTodos(tasks);
-        setSaving(false)
+        await loadTodos();
         setSnackbarOpen(true);
         const msg = `Task Deleted Successfully!`;
         setAlertMessage(msg);
@@ -102,9 +84,7 @@ const Todo = () => {
     useEffect(() => {
         const run = async () => {
             setSaving(true);
-            const tasks = await FetchTasks();
-            setTodos(tasks);
-            setSaving(false);
+            await loadTodos();
         }
         run();
     }, [])
@@ -116,13 +96,13 @@ const Todo = () => {
                     required={true}
                     min={3}
                     fullWidth
-                    autoFocus
                     value={todo.name}
+                    variant='outlined'
                     type='text'
                     onChange={handleChange}
                     // error={!isInputValid}
                     helperText={!isInputValid ? 'Input must be at least 3 characters' : ''}
-                    placeholder='Your Task...'
+                    label='Your Task...'
                 />
             </form>
         </div>

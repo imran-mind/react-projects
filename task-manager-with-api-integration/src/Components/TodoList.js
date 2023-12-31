@@ -12,7 +12,6 @@ const TodoList = (props) => {
         handleRowClick,
         handleEditMode,
         handleRowDelete } = props;
-    console.log('=---items ', items);
     return (
         <List>
             {items && items.map((item, index) => (

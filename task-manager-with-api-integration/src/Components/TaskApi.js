@@ -65,9 +65,9 @@ export const FetchTasks = async () => {
         const result = await fetch(url);
         const tasks = await result.json();
         if (result.status === 200) {
-            console.log("--> server res ", result.status);
             return tasks?.data;
         }
+        return [];
     } catch (err) {
         console.error('Error while fetching tasks: ', err);
     }
