@@ -13,9 +13,10 @@ export const CreateTask = async (task) => {
         }
         const result = await fetch(url, options);
         const data = await result.json();
-        console.log(data);
+        return data;
     } catch (err) {
-        console.log('Error');
+        console.log('Create Error');
+        throw err;
     }
 }
 
@@ -34,8 +35,10 @@ export const UpdateTask = async (task) => {
         const result = await fetch(url, options);
         const data = await result.json();
         console.log(data);
+        return data;
     } catch (err) {
-        console.log('Error');
+        console.log('Update Error');
+        throw err;
     }
 }
 

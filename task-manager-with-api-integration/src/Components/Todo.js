@@ -14,10 +14,10 @@ const Todo = () => {
     const [isSnackbarOpen, setSnackbarOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [isSaving, setSaving] = useState(false);
+    const [severity, setSeverity] = useState(false);
     const isInputValid = todo?.name?.length >= 3;
 
     const handleChange = (e) => {
-        console.log(e.target.value);
         if (isEditMode) {
             setTodo({
                 _id: todo?._id,
@@ -39,22 +39,36 @@ const Todo = () => {
         setTodos(tasks);
         setSaving(false)
     }
+
+    const setSeverityMessage = (result) => {
+        let msg = `Task ${isEditMode ? 'Updated' : 'Created'} Successfully!`;
+        if (result.status >= 400) {
+            msg = result.message;
+            setSeverity('error');
+        } else {
+            setSeverity('success');
+        }
+        setAlertMessage(msg);
+    }
+
     const handleClick = async (e) => {
         e.preventDefault();
-        if (todo && !isEditMode && isInputValid) { // Add new Mode
+        if (todo && !isEditMode && isInputValid) { //Create Mode
             setSaving(true)
-            await CreateTask(todo);
+            const result = await CreateTask(todo);
+            console.log(typeof result.status);
+            setSeverityMessage(result);
             await loadTodos();
         } else if (todo && isEditMode && isInputValid) { //Edit Mode
             setSaving(true)
-            await UpdateTask(todo);
+            console.log(todo);
+            const result = await UpdateTask(todo);
+            setSeverityMessage(result);
             await loadTodos();
             setIsEditMode(false);
         }
         setTodo({ _id: 0, name: '', isCompleted: false });
         if (isInputValid) {
-            const msg = `Task ${isEditMode ? 'Updated' : 'Created'} Successfully!`;
-            setAlertMessage(msg);
             setSnackbarOpen(true);
         }
     }
@@ -87,7 +101,8 @@ const Todo = () => {
             await loadTodos();
         }
         run();
-    }, [])
+    }, []);
+
     return <div className='container'>
         <div className='top-box'>
             <form onSubmit={handleClick}>
@@ -117,6 +132,7 @@ const Todo = () => {
 
         {/* Custom Alert */}
         <CustomAlert
+            severity={severity}
             isSnackbarOpen={isSnackbarOpen}
             handleSnackbarClose={handleSnackbarClose}
             alertMessage={alertMessage}
