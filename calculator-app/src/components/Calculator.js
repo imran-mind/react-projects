@@ -45,28 +45,24 @@ const Calculator = () => {
         </div>
         <div className="bottom-box">
             <div className="row">
-                <button value={1} onClick={handleClick} >1</button>
-                <button value={2} onClick={handleClick} >2</button>
-                <button value={3} onClick={handleClick} >3</button>
-                <button value={4} onClick={handleClick} >4</button>
+                {[1, 2, 3, 4].map((item) => {
+                    return <button value={item} onClick={handleClick}>{item}</button>
+                })}
             </div>
             <div className="row">
-                <button value={5} onClick={handleClick} >5</button>
-                <button value={6} onClick={handleClick} >6</button>
-                <button value={7} onClick={handleClick} >7</button>
-                <button value={8} onClick={handleClick} >8</button>
+                {[5, 6, 7, 8].map((item) => {
+                    return <button value={item} onClick={handleClick}>{item}</button>
+                })}
             </div>
             <div className="row">
-                <button value={9} onClick={handleClick} >9</button>
-                <button value={0} onClick={handleClick} >0</button>
-                <button value={'c'} onClick={handleClick} >C</button>
-                <button value={'.'} onClick={handleClick} >.</button>
+                {[9, 0, 'c', '.'].map((item) => {
+                    return <button value={item} onClick={handleClick}>{item}</button>
+                })}
             </div>
             <div className="row">
-                <button value={'+'} onClick={handleClick} >+</button>
-                <button value={'-'} onClick={handleClick} >-</button>
-                <button value={'*'} onClick={handleClick} >X</button>
-                <button value={'/'} onClick={handleClick} >/</button>
+                {['+', '-', '*', '/'].map((item) => {
+                    return <button value={item} onClick={handleClick}>{item}</button>
+                })}
             </div>
             <div className="row">
                 <button value={'='} onClick={handleClick} >=</button>
