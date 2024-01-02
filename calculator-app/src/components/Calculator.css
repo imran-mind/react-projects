@@ -1,0 +1,20 @@
+button{
+    height: 50px;
+    width: 50px;
+    margin: 5px;
+    font-size: 20px;
+    background-color: darkseagreen;
+    border: navajowhite;
+    cursor: pointer;
+}
+button:hover{
+    color: white;
+}
+
+input{
+    height: 40px;
+    width: 230px;
+    margin-bottom: 10px;
+    outline: none;
+    font-size: 20px;
+}
